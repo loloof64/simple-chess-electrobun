@@ -29,8 +29,8 @@ const mainWindow = new BrowserWindow({
 	frame: {
 		width: 900,
 		height: 700,
-		x: 200,
-		y: 200,
+		x: 0,
+		y: 0,
 	},
 });
 
