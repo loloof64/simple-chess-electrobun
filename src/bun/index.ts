@@ -24,7 +24,7 @@ async function getMainViewUrl(): Promise<string> {
 const url = await getMainViewUrl();
 
 const mainWindow = new BrowserWindow({
-	title: "React + Tailwind + Vite",
+	title: "Simple chess",
 	url,
 	frame: {
 		width: 900,
@@ -34,4 +34,4 @@ const mainWindow = new BrowserWindow({
 	},
 });
 
-console.log("React Tailwind Vite app started!");
+console.log("Simple chess app started!");
