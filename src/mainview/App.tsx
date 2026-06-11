@@ -4,10 +4,22 @@ import { Chessboard, PieceDropHandlerArgs } from 'react-chessboard';
 
 function App() {
 
-	const chessGameRef = useRef(new Chess());
+	const chessGameRef = useRef(new Chess("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2"));
     const chessGame = chessGameRef.current;
 
 	const [chessPosition, setChessPosition] = useState(chessGame.fen());
+	const [history, setHistory] = useState(`${getMoveNumberString()}`);
+
+	function getMoveNumberString(): string {
+		return `${parseInt(chessGame.fen().split(" ")[5])}${(chessGame.turn() === 'b' ? '...' : '.')}`;
+	}
+
+	function addMove(san: String) {
+		setHistory((old) => `${old} ${san}`)
+		if (chessGame.turn() === 'w') {
+			setHistory((old) => `${old} ${chessGame.moveNumber()}.`)
+		}
+	}
 
 	function onPieceDrop({
       sourceSquare,
@@ -18,11 +30,13 @@ function App() {
       }
 
       try {
-        chessGame.move({
+        const moveDone = chessGame.move({
           from: sourceSquare,
           to: targetSquare,
           promotion: 'q'
         });
+
+		addMove(moveDone.san);
 
         setChessPosition(chessGame.fen());
 
@@ -44,8 +58,8 @@ function App() {
 			<div className='w-5/6 md:w-2/3 mx-auto md:my-auto md:h-3/4 my-4 md:mx-4'>
 				<Chessboard options={chessboardOptions} />
 			</div>
-			<div className='bg-white w-5/6 mx-auto my-4 md:mx-4 grow'>
-				
+			<div className='bg-white w-5/6 mx-auto my-4 md:mx-4 grow text-2xl'>
+				{history}
 			</div>
 		</div>
 	);
