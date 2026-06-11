@@ -58,7 +58,7 @@ function App() {
 			<div className='w-5/6 md:w-2/3 mx-auto md:my-auto md:h-3/4 my-4 md:mx-4'>
 				<Chessboard options={chessboardOptions} />
 			</div>
-			<div className='bg-white w-5/6 mx-auto my-4 md:mx-4 grow text-2xl'>
+			<div className='bg-white w-5/6 mx-auto my-4 md:mx-4 grow text-2xl p-4'>
 				{history}
 			</div>
 		</div>
