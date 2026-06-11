@@ -4,7 +4,7 @@ import { Chessboard, PieceDropHandlerArgs } from 'react-chessboard';
 
 function App() {
 
-	const chessGameRef = useRef(new Chess("8/2k1P1q1/8/8/8/8/3K4/8 w - - 0 1"));
+	const chessGameRef = useRef(new Chess());
     const chessGame = chessGameRef.current;
 
 	function getTurnColor() : string {
@@ -60,8 +60,8 @@ function App() {
 
 	return (
 		<div className="h-full min-h-screen bg-gradient-to-br from-orange-500 to-red-900 flex flex-col md:flex-row">
-			<div className='w-5/6 md:w-2/3 mx-auto md:my-auto md:h-3/4 my-4 md:mx-4'>				
-				<div className='flex flex-row justify-center items-center'>
+			<div className='w-5/6 md:w-[45%] mx-auto md:my-auto md:h-fit my-4 md:mx-4'>				
+				<div className='flex flex-row justify-center items-center h-fit'>
 					<div className={`w-10 h-10 ${getTurnColor()} m-2 rounded-full`}></div>
 					Promote pawn to
 					<select className='m-2' onChange={(v) => setPromotionPiece(v.target.value)}>
@@ -71,9 +71,11 @@ function App() {
 						<option value='n'>knight</option>
 					</select>
 				</div>
-				<Chessboard options={chessboardOptions} />
+				<div className='h-fit'>
+					<Chessboard options={chessboardOptions} />
+				</div>
 			</div>
-			<div className='bg-white w-5/6 mx-auto my-4 md:mx-4 grow text-2xl p-4'>
+			<div className='bg-white w-5/6 sm:w-1/3 h-full md:h-[95%] flex-1 mx-auto my-4 md:mx-4 text-4xl p-4 overflow-y-auto'>
 				{history}
 			</div>
 		</div>
