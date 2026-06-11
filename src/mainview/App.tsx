@@ -26,6 +26,12 @@ function App() {
 		}
 	}
 
+	function startNewGame() {
+		chessGame.reset()
+		setChessPosition(chessGame.fen())
+		setHistory(`${getMoveNumberString()}`)
+	}
+
 	function onPieceDrop({
       sourceSquare,
       targetSquare
@@ -62,6 +68,7 @@ function App() {
 		<div className="h-full min-h-screen bg-gradient-to-br from-orange-500 to-red-900 flex flex-col md:flex-row">
 			<div className='w-5/6 md:w-[45%] mx-auto md:my-auto md:h-fit my-4 md:mx-4'>				
 				<div className='flex flex-row justify-center items-center h-fit'>
+					<button onClick={startNewGame}>Restart</button>
 					<div className={`w-10 h-10 ${getTurnColor()} m-2 rounded-full`}></div>
 					Promote pawn to
 					<select className='m-2' onChange={(v) => setPromotionPiece(v.target.value)}>
