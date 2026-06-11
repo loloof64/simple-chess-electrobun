@@ -4,7 +4,7 @@ import { Chessboard, PieceDropHandlerArgs } from 'react-chessboard';
 
 function App() {
 
-	const chessGameRef = useRef(new Chess("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2"));
+	const chessGameRef = useRef(new Chess("8/2k1P1q1/8/8/8/8/3K4/8 w - - 0 1"));
     const chessGame = chessGameRef.current;
 
 	function getTurnColor() : string {
@@ -13,6 +13,7 @@ function App() {
 
 	const [chessPosition, setChessPosition] = useState(chessGame.fen());
 	const [history, setHistory] = useState(`${getMoveNumberString()}`);
+	const [promotionPiece, setPromotionPiece] = useState('q');
 
 	function getMoveNumberString(): string {
 		return `${parseInt(chessGame.fen().split(" ")[5])}${(chessGame.turn() === 'b' ? '...' : '.')}`;
@@ -37,7 +38,7 @@ function App() {
         const moveDone = chessGame.move({
           from: sourceSquare,
           to: targetSquare,
-          promotion: 'q'
+          promotion: promotionPiece,
         });
 
 		addMove(moveDone.san);
@@ -59,8 +60,17 @@ function App() {
 
 	return (
 		<div className="h-full min-h-screen bg-gradient-to-br from-orange-500 to-red-900 flex flex-col md:flex-row">
-			<div className='w-5/6 md:w-2/3 mx-auto md:my-auto md:h-3/4 my-4 md:mx-4'>
-				<div className={`w-10 h-10 ${getTurnColor()} m-2 rounded-full`}></div>
+			<div className='w-5/6 md:w-2/3 mx-auto md:my-auto md:h-3/4 my-4 md:mx-4'>				
+				<div className='flex flex-row justify-center items-center'>
+					<div className={`w-10 h-10 ${getTurnColor()} m-2 rounded-full`}></div>
+					Promote pawn to
+					<select className='m-2' onChange={(v) => setPromotionPiece(v.target.value)}>
+						<option value='q' defaultChecked>queen</option>
+						<option value='r'>rook</option>
+						<option value='b'>bishop</option>
+						<option value='n'>knight</option>
+					</select>
+				</div>
 				<Chessboard options={chessboardOptions} />
 			</div>
 			<div className='bg-white w-5/6 mx-auto my-4 md:mx-4 grow text-2xl p-4'>
