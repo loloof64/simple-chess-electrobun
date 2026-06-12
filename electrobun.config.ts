@@ -2,8 +2,8 @@ import type { ElectrobunConfig } from "electrobun";
 
 export default {
 	app: {
-		name: "react-tailwind-vite",
-		identifier: "reacttailwindvite.electrobun.dev",
+		name: "simple-chess",
+		identifier: "simple-chess.electrobun.dev",
 		version: "0.0.1",
 	},
 	build: {
@@ -18,7 +18,7 @@ export default {
 			bundleCEF: false,
 		},
 		linux: {
-			bundleCEF: false,
+			bundleCEF: true,
 		},
 		win: {
 			bundleCEF: false,
