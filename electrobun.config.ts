@@ -4,7 +4,10 @@ export default {
   app: {
     name: "simple-chess",
     identifier: "simple-chess.electrobun.dev",
-    version: "0.0.3",
+    version: "0.0.4",
+  },
+  runtime: {
+    exitOnLastWindowClosed: true,
   },
   build: {
     // Vite builds to dist/, we copy from there
@@ -18,7 +21,7 @@ export default {
       bundleCEF: false,
     },
     linux: {
-      bundleCEF: true,
+      bundleCEF: false,
       icon: "assets/icon.png",
     },
     win: {

@@ -2,9 +2,12 @@
 
 A simple chess application.
 
-## Install
+## Prerequesites (Linux)
 
-You should have at least 1.5 Gb on your hard drive.
+- Linux x64 (glibc 2.35+, Ubuntu 22.04+)
+- GTK 4 + WebKitGTK (sudo apt install libwebkit2gtk-4.1-dev)
+
+## Install
 
 Just run the installer in the Setup archive matching your os architecture.
 

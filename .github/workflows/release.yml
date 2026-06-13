@@ -1,105 +1,117 @@
-name: Build and Release
+# Build Electrobun bundles on Windows + Linux and attach them to a GitHub Release.
+# Triggers: git tag v* (e.g. v0.2.0), or manual run (artifacts only, no release unless tag).
+
+name: Build & release
 
 on:
   push:
     tags:
       - "v*"
   workflow_dispatch:
-    inputs:
-      tag:
-        description: "Tag to release (e.g., v0.0.19 or v0.0.19-beta.1)"
-        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
+  bundle:
     strategy:
+      fail-fast: false
       matrix:
         include:
-          - os: ubuntu-24.04
-            platform: linux
-            arch: x64
-            platform_name: linux
-          - os: ubuntu-24.04-arm
-            platform: linux
-            arch: arm64
-            platform_name: linux
-          - os: windows-2025
-            platform: win32
-            arch: x64
-            platform_name: win
+          - os: windows-latest
+            artifact: windows-x64
+          - os: ubuntu-22.04
+            artifact: linux-x64
+          - os: macos-15-intel
+            artifact: macos-x86
+          - os: macos-15
+            artifact: macos-arm64
 
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          submodules: recursive
+          bun-version: latest
 
-      - name: Determine release type
-        id: release-type
-        shell: bash
-        run: |
-          TAG="${{ github.event.inputs.tag || github.ref_name }}"
-          if [[ "$TAG" == *"-beta"* ]] || [[ "$TAG" == *"-alpha"* ]] || [[ "$TAG" == *"-rc"* ]]; then
-            echo "channel=canary" >> $GITHUB_OUTPUT
-          else
-            echo "channel=stable" >> $GITHUB_OUTPUT
-          fi
-          VERSION="${TAG#v}"
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: 1.3.8
-
-      - name: Install dependencies
-        run: bun install
-
-      - name: Setup MSVC Developer Command Prompt
-        if: matrix.platform == 'win32'
-        uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: x64
-
-      - name: Install Linux build dependencies
-        if: matrix.platform == 'linux'
+      - name: Linux — GTK / WebKit (Electrobun)
+        if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            libwebkit2gtk-4.1-dev \
-            libgtk-3-dev \
-            libayatana-appindicator3-dev \
-            build-essential \
-            cmake \
-            pkg-config
+            build-essential cmake pkg-config \
+            libgtk-3-dev libwebkit2gtk-4.1-dev \
+            libayatana-appindicator3-dev librsvg2-dev
 
-      - name: Build for ${{ matrix.platform_name }}-${{ matrix.arch }}
-        run: bun run build:"${{ steps.release-type.outputs.channel }}"
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v6
+      - name: Bundle desktop app (Electrobun)
+        run: bun run build:stable
+
+      - name: List artifacts
+        shell: bash
+        run: |
+          ls -la artifacts/ || true
+          ls -la build/ || true
+
+      - name: Upload bundle
+        uses: actions/upload-artifact@v4
         with:
-          path: artifacts/*
+          name: ${{ matrix.artifact }}
+          path: artifacts/
+          if-no-files-found: error
 
   release:
-    needs: build
+    needs: bundle
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
 
     steps:
-      - uses: actions/checkout@v6
-
-      - name: Download all artifacts
-        uses: actions/download-artifact@v7
+      - name: Download Windows bundle
+        uses: actions/download-artifact@v4
         with:
-          path: artifacts
+          name: windows-x64
+          path: release-assets/windows-x64
 
-      - name: Create Release
+      - name: Download Linux bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-x64
+          path: release-assets/linux-x64
+
+      - name: Download macOS x86 bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-x86
+          path: release-assets/macos-x86
+
+      - name: Download macOS arm64 bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-arm64
+          path: release-assets/macos-arm64
+
+      - name: Flatten for GitHub Release
+        run: |
+          mkdir -p upload
+          find release-assets -type f -exec cp -v {} upload/ \;
+          ls -la upload/
+
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
-          files: |
-            artifacts/*
+          draft: false
           generate_release_notes: false
+          files: upload/*
           body_path: CHANGELOG.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
