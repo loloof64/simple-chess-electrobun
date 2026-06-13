@@ -81,11 +81,6 @@ jobs:
         with:
           path: artifacts/*
 
-      - name: Clean up after artifact upload
-        shell: bash
-        run: |
-          rm -f artifacts
-
   release:
     needs: build
     runs-on: ubuntu-latest

@@ -1,6 +1,6 @@
 {
   "name": "simple-chess",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Simple chess app",
   "scripts": {
     "start": "vite build && electrobun dev",
