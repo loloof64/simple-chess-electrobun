@@ -54,7 +54,6 @@ jobs:
 
       - name: Install dependencies
         run: bun install
-        working-directory: package
 
       - name: Setup MSVC Developer Command Prompt
         if: matrix.platform == 'win32'
