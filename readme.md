@@ -9,7 +9,11 @@ A simple chess application.
 
 ## Install
 
-Just run the installer in the Setup archive matching your os architecture.
+You will need about 260Mb on your Hard drive
+
+1) Download the Setup archive matching your architecture
+2) Extract it
+3) Run the installer program : it will install the program in your (.local) directory and you'll be able to launch it from the application search bar
 
 ## Credits
 
