@@ -7,7 +7,7 @@ A simple chess application.
 - Linux x64 (glibc 2.35+, Ubuntu 22.04+)
 - GTK 4 + WebKitGTK (sudo apt install libwebkit2gtk-4.1-dev)
 
-## Install
+## Install
 
 Just run the installer in the Setup archive matching your os architecture.
 
